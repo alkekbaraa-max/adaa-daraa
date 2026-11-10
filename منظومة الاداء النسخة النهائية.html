@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنظومة المؤسسية الموحدة لإدارة الأداء وتقييم المقابلات | مديرية التنمية الإدارية - درعا</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo & Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepGreen: {
+                            50: '#F2F6F3',
+                            100: '#E1EBE4',
+                            700: '#2C4A34',
+                            800: '#1B3022',
+                            900: '#112016',
+                        },
+                        royalBeige: {
+                            50: '#FDFBF7',
+                            100: '#F7F2EA',
+                            200: '#F4EBE1',
+                            300: '#EAE0D0',
+                        },
+                        adminGold: {
+                            400: '#D4AF37',
+                            500: '#B89355',
+                            600: '#9A783E',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: #FDFBF7;
+            color: #112016;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4EBE1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B89355;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9A783E;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .print-page {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 10mm !important;
+                page-break-after: always;
+            }
+            .print-break-inside {
+                page-break-inside: avoid;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid #2C4A34;
+            background-color: #FFFFFF;
+            color: #112016;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .score-btn.selected {
+            background-color: #2C4A34;
+            color: #FFFFFF;
+            border-color: #112016;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        .disabled-dim {
+            opacity: 0.4;
+            background-color: #e5e7eb !important;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-royalBeige-50 text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- نافذة التنبيهات المخصصة بروح المنصة (بدلاً من رسائل المتصفح) -->
+    <div id="customAlertModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 border-2 border-adminGold-500 shadow-2xl text-center space-y-4 animate-fadeIn">
+            <div class="w-16 h-16 rounded-full bg-deepGreen-50 border-2 border-adminGold-400 flex items-center justify-center text-adminGold-500 mx-auto text-2xl shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-extrabold text-deepGreen-900 mb-1">تنبيه إداري من منظومة الأداء</h3>
+                <p id="customAlertMessage" class="text-xs text-gray-600 leading-relaxed">يرجى استكمال كافة الحقول المطلوبة بدقة قبل المتابعة.</p>
+            </div>
+            <button onclick="closeCustomAlert()" class="w-full bg-deepGreen-800 hover:bg-deepGreen-900 text-white font-bold py-2.5 rounded-lg text-sm transition shadow">
+                حسناً، فهمت
+            </button>
+        </div>
+    </div>
+
+    <div>
+        <!-- Official Header -->
+        <header class="bg-gradient-to-r from-deepGreen-900 via-deepGreen-800 to-deepGreen-700 text-white border-b-4 border-adminGold-500 shadow-lg no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4 space-x-reverse">
+                        <div class="w-16 h-16 rounded-full bg-royalBeige-50/10 border-2 border-adminGold-400 flex items-center justify-center text-adminGold-400 shadow-inner">
+                            <i class="fa-solid fa-landmark text-3xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold uppercase tracking-widest text-adminGold-400 block mb-1">الجمهورية العربية السورية - محافظة درعا</span>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">مديرية التنمية الإدارية</h1>
+                            <p class="text-xs sm:text-sm text-royalBeige-200 mt-0.5">المنظومة الموحدة المدمجة لإدارة الأداء الوظيفي وتقييم المقابلات الشفهية والتحليل البُعدي</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="window.print()" class="inline-flex items-center gap-2 bg-adminGold-500 hover:bg-adminGold-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-md transition-all duration-200 hover:shadow-lg">
+                            <i class="fa-solid fa-print"></i>
+                            <span>طباعة / تصدير PDF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Navigation Bar -->
+        <nav class="bg-deepGreen-800 text-royalBeige-100 shadow-md sticky top-0 z-50 border-b border-adminGold-500/30 no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap justify-center md:justify-start gap-1 py-2">
+                    <button onclick="switchTab('strategy')" id="tab-btn-strategy" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold transition-all text-adminGold-400 bg-deepGreen-900 border-b-2 border-adminGold-400">
+                        <i class="fa-solid fa-compass ml-1"></i> 1. استراتيجية الأداء
+                    </button>
+                    <button onclick="switchTab('roadmap')" id="tab-btn-roadmap" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-route ml-1"></i> 2. خارطة طريق الموظف
+                    </button>
+                    <button onclick="switchTab('pillars')" id="tab-btn-pillars" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-layer-group ml-1"></i> 3. المحاور والمصفوفة
+                    </button>
+                    <button onclick="switchTab('interviewSession')" id="tab-btn-interviewSession" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-user-check ml-1"></i> 4. جلسة المقابلة الشفهية
+                    </button>
+                    <button onclick="switchTab('calculator')" id="tab-btn-calculator" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-calculator ml-1"></i> 5. حاسبة الأداء
+                    </button>
+                    <button onclick="switchTab('form')" id="tab-btn-form" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-file-signature ml-1"></i> 6. استمارة التقييم الوظيفي
+                    </button>
+                    <button onclick="switchTab('questionBank')" id="tab-btn-questionBank" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-book-open ml-1"></i> 7. بنك الأسئلة الشامل
+                    </button>
+                    <button onclick="switchTab('interviewGuide')" id="tab-btn-interviewGuide" class="nav-btn px-3 py-2 rounded-md text-xs sm:text-sm font-bold hover:bg-deepGreen-700 transition-all text-royalBeige-200">
+                        <i class="fa-solid fa-graduation-cap ml-1"></i> 8. دليل الأنماط والقبعات
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- 1. STRATEGY -->
+            <div id="tab-strategy" class="tab-content active space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-lightbulb text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">1. استراتيجية الخطة والأهداف والرؤية</h2>
+                            <p class="text-sm text-gray-600">رؤية تقييم الأداء المستمر في مديرية التنمية الإدارية بدرعا</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed text-base mb-6">
+                        تسعى مديرية التنمية الإدارية من خلال إقرار هذه الخطة إلى الانتقال بـ <strong>منظومة تقييم الأداء الوظيفي والتصنيف السلوكي</strong> من مجرد إجراء شكلي إلى <strong>نظام ديناميكي مستمر للتطوير والتمكين والترشيد الوظيفي</strong>. تقوم فلسفتنا على الربط المباشر بين الأبعاد الأربعة لشخصية الموظف (النمط الإداري) والأداء الميداني لتحقيق القرار الحاسم: (تثبيت، نقل وتدوير، أو تدريب)[cite: 1].
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <div class="bg-royalBeige-50 p-5 rounded-lg border border-royalBeige-200">
+                            <div class="flex items-center gap-3 mb-3 text-deepGreen-800">
+                                <i class="fa-solid fa-bullseye text-xl text-adminGold-500"></i>
+                                <h3 class="font-bold text-lg">الهدف الاستراتيجي</h3>
+                            </div>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                رفع الكفاءة التشغيلية عبر الاستثمار الأفضل للأنماط الشخصية التخصصية ووضع الموظف في الشاغر الأكثر تناسباً مع طبيعة تفكيره[cite: 1].
+                            </p>
+                        </div>
+                        <div class="bg-royalBeige-50 p-5 rounded-lg border border-royalBeige-200">
+                            <div class="flex items-center gap-3 mb-3 text-deepGreen-800">
+                                <i class="fa-solid fa-scale-balanced text-xl text-adminGold-500"></i>
+                                <h3 class="font-bold text-lg">التصنيف البُعدي العادل</h3>
+                            </div>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                اعتماد الأنماط الإدارية الأربعة السهلة (المبتكر والاستراتيجي، القائد والتمكيني، الدبلوماسي والخدمي، المنفذ والرقابي) لضمان سرعة ودقة التقييم[cite: 1].
+                            </p>
+                        </div>
+                        <div class="bg-royalBeige-50 p-5 rounded-lg border border-royalBeige-200">
+                            <div class="flex items-center gap-3 mb-3 text-deepGreen-800">
+                                <i class="fa-solid fa-chart-line text-xl text-adminGold-500"></i>
+                                <h3 class="font-bold text-lg">القرارات الإدارية الثلاثية</h3>
+                            </div>
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                                ربط مخرجات التقييم تلقائياً بقرار التثبيت، أو النقل والتدوير لشاغر أنسب، أو الإلحاق بمسار تدريبي تمكيني[cite: 1].
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ROADMAP -->
+            <div id="tab-roadmap" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-route text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">2. خارطة طريق الموظف والمسار الإداري</h2>
+                            <p class="text-sm text-gray-650">مراحل تقييم وتوجيه الموظف منذ التعيين حتى الاستقرار الإداري</p>
+                        </div>
+                    </div>
+
+                    <div class="relative border-r-4 border-adminGold-500 mr-4 sm:mr-8 space-y-8 pr-6 sm:pr-8">
+                        <div class="relative bg-royalBeige-50 p-6 rounded-xl border border-royalBeige-300 shadow-sm">
+                            <div class="absolute -right-[39px] sm:-right-[47px] top-6 w-8 h-8 rounded-full bg-deepGreen-800 text-adminGold-400 flex items-center justify-center font-bold border-2 border-adminGold-500 shadow">1</div>
+                            <h3 class="text-lg font-bold text-deepGreen-900 border-b pb-2 mb-2">المرحلة الأولى: المقابلة الشفهية وتحديد النمط الإداري (Baseline)</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+                                إجراء المقابلة المخصصة للشاغر ورصد القبعة السائدة وتحديد النمط الإداري للمرشح لوضع خط الأساس المرجعي[cite: 1].
+                            </p>
+                        </div>
+                        <div class="relative bg-royalBeige-50 p-6 rounded-xl border border-royalBeige-300 shadow-sm">
+                            <div class="absolute -right-[39px] sm:-right-[47px] top-6 w-8 h-8 rounded-full bg-deepGreen-800 text-adminGold-400 flex items-center justify-center font-bold border-2 border-adminGold-500 shadow">2</div>
+                            <h3 class="text-lg font-bold text-deepGreen-900 border-b pb-2 mb-2">المرحلة الثانية: فترة التجربة والتقييم الميداني (3 أشهر)</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+                                اختبار انسجام الموظف مع مهام الشاغر والانضباط المؤسسي والإنتاجية اليومية[cite: 1].
+                            </p>
+                        </div>
+                        <div class="relative bg-royalBeige-50 p-6 rounded-xl border border-royalBeige-300 shadow-sm">
+                            <div class="absolute -right-[39px] sm:-right-[47px] top-6 w-8 h-8 rounded-full bg-deepGreen-800 text-adminGold-400 flex items-center justify-center font-bold border-2 border-adminGold-500 shadow">3</div>
+                            <h3 class="text-lg font-bold text-deepGreen-900 border-b pb-2 mb-2">المرحلة الثالثة: صدور القرار الحاسم (تثبيت / نقل وتدوير / تدريب)</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed mb-3">
+                                اعتماد التقرير النهائي المربوط بالأداء والنمط والشاغر الموصى به لاتخاذ الإجراء الوظيفي الأمثل[cite: 1].
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. PILLARS & MATRIX -->
+            <div id="tab-pillars" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-layer-group text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">3. المحاور الأربعة للقياس ومصفوفة الأوزان</h2>
+                            <p class="text-sm text-gray-600">شرح المحاور والتوزيع الموزون المعتمد للدرجات (إجمالي 100 درجة)</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-royalBeige-300 shadow-sm">
+                        <table class="w-full text-right border-collapse">
+                            <thead>
+                                <tr class="bg-deepGreen-800 text-white text-sm">
+                                    <th class="p-3">المحور</th>
+                                    <th class="p-3 text-center">الوزن النسبى</th>
+                                    <th class="p-3 text-center">الدرجة المباشرة</th>
+                                    <th class="p-3 text-center">الدرجة الموزونة القصوى</th>
+                                    <th class="p-3">معادلة الاحتساب</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-royalBeige-200 text-sm text-gray-800">
+                                <tr class="hover:bg-royalBeige-50">
+                                    <td class="p-3 font-bold">1. السمات الشخصية والسلوكية (النمط الإداري)</td>
+                                    <td class="p-3 text-center font-semibold text-deepGreen-800">20%</td>
+                                    <td class="p-3 text-center">100</td>
+                                    <td class="p-3 text-center font-bold text-adminGold-600">20 درجة</td>
+                                    <td class="p-3 font-mono text-xs text-gray-600">(الدرجة المباشرة × 0.20)</td>
+                                </tr>
+                                <tr class="hover:bg-royalBeige-50">
+                                    <td class="p-3 font-bold">2. الجدارات الفنية والتخصصية</td>
+                                    <td class="p-3 text-center font-semibold text-deepGreen-800">30%</td>
+                                    <td class="p-3 text-center">100</td>
+                                    <td class="p-3 text-center font-bold text-adminGold-600">30 درجة</td>
+                                    <td class="p-3 font-mono text-xs text-gray-600">(الدرجة المباشرة × 0.30)</td>
+                                </tr>
+                                <tr class="hover:bg-royalBeige-50">
+                                    <td class="p-3 font-bold">3. الإنتاجية والالتزام الانضباطي</td>
+                                    <td class="p-3 text-center font-semibold text-deepGreen-800">30%</td>
+                                    <td class="p-3 text-center">100</td>
+                                    <td class="p-3 text-center font-bold text-adminGold-600">30 درجة</td>
+                                    <td class="p-3 font-mono text-xs text-gray-600">(الدرجة المباشرة × 0.30)</td>
+                                </tr>
+                                <tr class="hover:bg-royalBeige-50">
+                                    <td class="p-3 font-bold">4. الابتكار والقيمة المضافة</td>
+                                    <td class="p-3 text-center font-semibold text-deepGreen-800">20%</td>
+                                    <td class="p-3 text-center">100</td>
+                                    <td class="p-3 text-center font-bold text-adminGold-600">20 درجة</td>
+                                    <td class="p-3 font-mono text-xs text-gray-600">(الدرجة المباشرة × 0.20)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. INTERVIEW SESSION -->
+            <div id="tab-interviewSession" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800 no-print">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-user-check text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">4. إعداد وتوليد جلسة المقابلة الشفهية المخصصة للشاغر</h2>
+                            <p class="text-sm text-gray-600">توليد الأسئلة المربوطة حصراً بالشاغر (مع إمكانية التعديل، الحذف، أو الاستبعاد أثناء الجلسة)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-deepGreen-900 mb-1">اسم الموظف المرشح:</label>
+                            <input type="text" id="candidateName" placeholder="أدخل الاسم الثلاثي..." class="w-full p-2.5 text-sm border border-royalBeige-300 rounded-lg bg-royalBeige-50 focus:outline-none focus:border-deepGreen-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-deepGreen-900 mb-1">نطاق التقييم الإداري:</label>
+                            <select id="evalScope" class="w-full p-2.5 text-sm border border-royalBeige-300 rounded-lg bg-royalBeige-50 focus:outline-none focus:border-deepGreen-800">
+                                <option value="internal">داخلي (مديرية التنمية الإدارية بدرعا)</option>
+                                <option value="external">خارجي (باقي المديريات بالمحافظة)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-deepGreen-900 mb-1">الشاغر / الوظيفة المستهدفة:</label>
+                            <select id="targetVacancySelect" onchange="checkCustomVacancy()" class="w-full p-2.5 text-sm border border-royalBeige-300 rounded-lg bg-royalBeige-50 focus:outline-none focus:border-deepGreen-800 font-bold text-gray-800">
+                                <optgroup label="المستوى القيادي والإداري">
+                                    <option value="مدير مديرية فرعية">مدير مديرية فرعية</option>
+                                    <option value="معاون مدير مديرية">معاون مدير مديرية</option>
+                                    <option value="مدير مكتب">مدير مكتب</option>
+                                    <option value="مساعد اداري اول">مساعد إداري أول</option>
+                                    <option value="مساعد دعم لوجستي وتنفيذي">مساعد دعم لوجستي وتنفيذي</option>
+                                </optgroup>
+                                <optgroup label="الخدمات والوحدات المساندة">
+                                    <option value="أخصائي رقابة داخلية">أخصائي رقابة داخلية</option>
+                                    <option value="أخصائي تخطيط وإحصاء">أخصائي تخطيط وإحصاء</option>
+                                    <option value="موظف ديوان وأرشفة">موظف ديوان وأرشفة</option>
+                                    <option value="مشرف الخدمات العامة">مشرف الخدمات العامة</option>
+                                    <option value="أخصائي المشتريات والتوريد والمستودعات">أخصائي المشتريات والتوريد والمستودعات</option>
+                                    <option value="أخصائي المحاسبة">أخصائي المحاسبة</option>
+                                    <option value="سائق">سائق</option>
+                                    <option value="مراسل">مراسل</option>
+                                </optgroup>
+                                <optgroup label="الموارد البشرية والتطوير">
+                                    <option value="أخصائي تخطيط وتوظيف موارد بشرية">أخصائي تخطيط وتوظيف موارد بشرية</option>
+                                    <option value="رئيس دائرة بيانات موارد بشرية">رئيس دائرة بيانات موارد بشرية</option>
+                                    <option value="أخصائي تدقيق بيانات وظيفية">أخصائي تدقيق بيانات وظيفية</option>
+                                    <option value="أخصائي توصيف وهندسة وظائف">أخصائي توصيف وهندسة وظائف</option>
+                                    <option value="أخصائي إعادة هندسة عمليات وتبسيط إجراءات">أخصائي إعادة هندسة عمليات وتبسيط إجراءات</option>
+                                    <option value="أخصائي قياس أداء مؤسسي">أخصائي قياس أداء مؤسسي</option>
+                                    <option value="أخصائي تحسين خدمات حكومية">أخصائي تحسين خدمات حكومية</option>
+                                    <option value="مدير مركز تدريب">مدير مركز تدريب</option>
+                                </optgroup>
+                                <option value="custom">شاغر آخر (إدخال يدوي مخصص)...</option>
+                            </select>
+                            <input type="text" id="targetVacancyCustom" placeholder="اكتب مسمى الشاغر يدوياً..." class="w-full p-2 text-xs border border-royalBeige-300 rounded-lg bg-white mt-1 hidden">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-deepGreen-900 mb-1">بنك الأسئلة المخصص:</label>
+                            <input type="text" value="10 أسئلة متكاملة ومتحكمة بالكامل" readonly class="w-full p-2.5 text-sm border border-royalBeige-300 rounded-lg bg-royalBeige-200 font-bold text-deepGreen-900 cursor-not-allowed">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="generateSession()" class="bg-deepGreen-800 hover:bg-deepGreen-900 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow flex items-center gap-2">
+                            <i class="fa-solid fa-gears"></i>
+                            <span>توليد وبدء جلسة الأسئلة المخصصة للشاغر</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exam Questions Area -->
+                <div id="examSection" class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm" style="display: none;">
+                    <div class="flex items-center justify-between border-b border-royalBeige-200 pb-4 mb-6 no-print">
+                        <h3 class="font-bold text-lg text-deepGreen-900"><i class="fa-solid fa-comments ml-2 text-adminGold-500"></i>جلسة المقابلة الشفهية والتحكم بالأسئلة (تعديل / حذف / استبعاد)</h3>
+                        <span class="text-xs text-gray-500">تقييم إجابة المرشح (من 1 إلى 5)</span>
+                    </div>
+
+                    <div id="questionsList" class="space-y-6"></div>
+
+                    <div class="mt-8 pt-4 border-t border-royalBeige-200 no-print">
+                        <button onclick="calculateResults()" class="bg-adminGold-500 hover:bg-adminGold-600 text-white font-bold px-8 py-3 rounded-lg text-sm transition shadow flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>معالجة النتائج وإصدار التقرير الشامل</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Final Interview Report -->
+                <div id="reportSection" class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-xl print-page" style="display: none;">
+                    <div class="flex items-center justify-between border-b-2 border-deepGreen-800 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-deepGreen-900">تقرير نتائج المقابلة الشفهية والتحليل السلوكي للنمط الإداري</h2>
+                            <p class="text-xs text-adminGold-600">مديرية التنمية الإدارية - محافظة درعا</p>
+                        </div>
+                        <div class="text-left text-xs text-gray-500">
+                            <div><strong>تاريخ المقابلة:</strong> <span id="resDate">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-4 text-xs">
+                            <div class="bg-royalBeige-50 p-3 rounded border border-royalBeige-200">
+                                <label class="text-gray-500 block mb-0.5">اسم الموظف المرشح:</label>
+                                <span id="resName" class="font-bold text-sm text-deepGreen-900">-</span>
+                            </div>
+                            <div class="bg-royalBeige-50 p-3 rounded border border-royalBeige-200">
+                                <label class="text-gray-500 block mb-0.5">الشاغر والوظيفة المستهدفة:</label>
+                                <span id="resJob" class="font-bold text-deepGreen-900">-</span>
+                            </div>
+                            <div class="bg-royalBeige-50 p-3 rounded border border-royalBeige-200">
+                                <label class="text-gray-500 block mb-0.5">النمط الإداري السائد والدرجة الكلية:</label>
+                                <span id="resDominantHat" class="font-bold text-adminGold-600 text-sm">-</span>
+                            </div>
+                            <div class="bg-royalBeige-50 p-3 rounded border border-royalBeige-200">
+                                <label class="text-gray-500 block mb-1">نقاط القوة البارزة:</label>
+                                <div id="resStrengths" class="flex flex-wrap gap-1"></div>
+                            </div>
+                            <div class="bg-royalBeige-50 p-3 rounded border border-royalBeige-200">
+                                <label class="text-gray-500 block mb-1">مجالات التطوير والتمكين:</label>
+                                <div id="resWeaknesses" class="flex flex-wrap gap-1"></div>
+                            </div>
+                            
+                            <div class="bg-deepGreen-900 text-white p-4 rounded-lg border-2 border-adminGold-500">
+                                <label class="text-adminGold-400 font-bold block mb-1">التوصية الإدارية الحاسمة:</label>
+                                <span id="resDecisionStatus" class="font-extrabold text-base block text-royalBeige-100 mb-1">-</span>
+                                <span id="resRecommendedRole" class="text-xs text-royalBeige-200 block">-</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center bg-royalBeige-50 p-4 rounded-xl border border-royalBeige-300">
+                            <canvas id="hatRadarChart" style="max-width: 100%; max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-royalBeige-300 no-print flex justify-end">
+                        <button onclick="transferInterviewToEmployeeForm()" class="bg-deepGreen-800 hover:bg-deepGreen-900 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow flex items-center gap-2">
+                            <i class="fa-solid fa-file-export text-adminGold-400"></i>
+                            <span>نقل النتائج والتوصية إلى استمارة التقييم الرسمية</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. CALCULATOR -->
+            <div id="tab-calculator" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-calculator text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">5. الحاسبة التفاعلية المباشرة للأداء</h2>
+                            <p class="text-sm text-gray-600">احتساب المجموع النهائي الموزون فورياً</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-4 bg-royalBeige-50 p-6 rounded-xl border border-royalBeige-300">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-sm font-bold text-deepGreen-900">1. السمات الشخصية والسلوكية (النمط الإداري - وزن 20%)</label>
+                                    <span id="calc-w1" class="text-xs font-bold text-adminGold-600">الموزون: 18.0 / 20</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="range" id="calc-input-1" min="0" max="100" value="90" oninput="calculateAppraisal()" class="w-full accent-deepGreen-800 h-2 bg-royalBeige-200 rounded-lg cursor-pointer">
+                                    <input type="number" id="calc-num-1" min="0" max="100" value="90" oninput="syncFromNum(1)" class="w-16 p-2 text-center text-sm font-bold border border-royalBeige-300 rounded-md bg-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-sm font-bold text-deepGreen-900">2. الجدارات الفنية والتخصصية (وزن 30%)</label>
+                                    <span id="calc-w2" class="text-xs font-bold text-adminGold-600">الموزون: 25.5 / 30</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="range" id="calc-input-2" min="0" max="100" value="85" oninput="calculateAppraisal()" class="w-full accent-deepGreen-800 h-2 bg-royalBeige-200 rounded-lg cursor-pointer">
+                                    <input type="number" id="calc-num-2" min="0" max="100" value="85" oninput="syncFromNum(2)" class="w-16 p-2 text-center text-sm font-bold border border-royalBeige-300 rounded-md bg-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-sm font-bold text-deepGreen-900">3. الإنتاجية والالتزام الانضباطي (وزن 30%)</label>
+                                    <span id="calc-w3" class="text-xs font-bold text-adminGold-600">الموزون: 26.4 / 30</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="range" id="calc-input-3" min="0" max="100" value="88" oninput="calculateAppraisal()" class="w-full accent-deepGreen-800 h-2 bg-royalBeige-200 rounded-lg cursor-pointer">
+                                    <input type="number" id="calc-num-3" min="0" max="100" value="88" oninput="syncFromNum(3)" class="w-16 p-2 text-center text-sm font-bold border border-royalBeige-300 rounded-md bg-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-sm font-bold text-deepGreen-900">4. الابتكار والقيمة المضافة (وزن 20%)</label>
+                                    <span id="calc-w4" class="text-xs font-bold text-adminGold-600">الموزون: 16.0 / 20</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="range" id="calc-input-4" min="0" max="100" value="80" oninput="calculateAppraisal()" class="w-full accent-deepGreen-800 h-2 bg-royalBeige-200 rounded-lg cursor-pointer">
+                                    <input type="number" id="calc-num-4" min="0" max="100" value="80" oninput="syncFromNum(4)" class="w-16 p-2 text-center text-sm font-bold border border-royalBeige-300 rounded-md bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-deepGreen-900 text-white rounded-xl p-6 border-2 border-adminGold-500 shadow-xl flex flex-col justify-between">
+                            <div>
+                                <div class="text-center border-b border-deepGreen-700 pb-4 mb-4">
+                                    <span class="text-xs font-bold text-adminGold-400 uppercase tracking-wider block mb-1">المجموع النهائي الموزون</span>
+                                    <div id="calc-total-score" class="text-5xl font-extrabold text-adminGold-400">85.9</div>
+                                    <span class="text-xs text-royalBeige-200 mt-1 block">من إجمالي 100 درجة</span>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div>
+                                        <span class="text-xs text-royalBeige-200 block">التقدير المستحق:</span>
+                                        <div id="calc-rating-badge" class="mt-1 text-sm font-bold px-3 py-1.5 rounded bg-blue-500 text-white text-center">جيد جداً</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-royalBeige-200 block mb-1">التوصية الإدارية:</span>
+                                        <div id="calc-recommendation" class="text-xs bg-deepGreen-800 p-3 rounded border border-deepGreen-700 leading-relaxed text-royalBeige-100">
+                                            تثبيت الموظف بالوظيفة الحالية مع إدراجه ببرامج تطوير القيادات الواعدة.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-deepGreen-700">
+                                <button onclick="applyToOfficialForm()" class="w-full bg-adminGold-500 hover:bg-adminGold-600 text-white font-bold py-2.5 rounded-lg text-sm transition shadow flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-file-import"></i>
+                                    <span>نقل النتائج للاستمارة الرسمية</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. FORM -->
+            <div id="tab-form" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-10 border border-royalBeige-300 shadow-xl print-page max-w-4xl mx-auto">
+                    <div class="flex items-center justify-between border-b-2 border-deepGreen-800 pb-4 mb-6">
+                        <div class="text-right">
+                            <h2 class="text-xl font-black text-deepGreen-900">مديرية التنمية الإدارية بدرعا</h2>
+                            <p class="text-xs font-bold text-adminGold-600">قسم إدارة الموارد البشرية وتقييم الأداء</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 rounded-full border-2 border-deepGreen-800 flex items-center justify-center text-deepGreen-800 mx-auto mb-1">
+                                <i class="fa-solid fa-landmark text-xl"></i>
+                            </div>
+                            <span class="text-[10px] text-gray-500 block">وثيقة تقييم رسمية</span>
+                        </div>
+                        <div class="text-left text-xs text-gray-600 space-y-1">
+                            <div><strong>رقم الوثيقة:</strong> <input type="text" id="form-doc-no" value="HR-EVAL-2026" class="border-b border-gray-400 bg-transparent w-28 text-left font-bold text-deepGreen-900 focus:outline-none"></div>
+                            <div><strong>تاريخ التقييم:</strong> <input type="date" id="form-doc-date" value="2026-11-10" class="border-b border-gray-400 bg-transparent text-left font-bold text-deepGreen-900 focus:outline-none"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-6">
+                        <h1 class="text-2xl font-black text-deepGreen-900 uppercase tracking-wide">استمارة تقييم الأداء الوظيفي والتحليل السلوكي للنمط الإداري</h1>
+                    </div>
+
+                    <!-- Personal & Personality Data -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-royalBeige-50 p-4 rounded-lg border border-royalBeige-300 text-xs mb-6">
+                        <div><strong>اسم الموظف:</strong> <input type="text" id="form-emp-name" placeholder="الاسم الثلاثي..." class="bg-white border border-gray-300 rounded p-1 focus:outline-none focus:border-deepGreen-800 w-full font-bold text-gray-800 mt-1"></div>
+                        <div><strong>الرقم الوظيفي:</strong> <input type="text" placeholder="EMP-2026" class="bg-white border border-gray-300 rounded p-1 focus:outline-none focus:border-deepGreen-800 w-full font-bold text-gray-800 mt-1"></div>
+                        <div><strong>المسمى الوظيفي:</strong> <input type="text" id="form-emp-job" value="أخصائي تخطيط وتوظيف موارد بشرية" class="bg-white border border-gray-300 rounded p-1 focus:outline-none focus:border-deepGreen-800 w-full font-bold text-gray-800 mt-1"></div>
+                        <div><strong>القسم / المديرية:</strong> <input type="text" value="تخطيط وتوظيف الموارد البشرية" class="bg-white border border-gray-300 rounded p-1 focus:outline-none focus:border-deepGreen-800 w-full font-bold text-gray-800 mt-1"></div>
+                        
+                        <div><strong>مرحلة التقييم:</strong> 
+                            <select id="form-stage-select" onchange="toggleBaselineState()" class="bg-white border border-gray-300 rounded p-1 focus:outline-none focus:border-deepGreen-800 w-full font-bold text-gray-800 mt-1">
+                                <option value="stage3">المرحلة 3: التقييم الدوري (6 أشهر)</option>
+                                <option value="stage2">المرحلة 2: فترة التجربة (3 أشهر)</option>
+                                <option value="stage1">المرحلة 1: المقابلة الشفهية (خط الأساس - تعتيم الحقل)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="baseline-container">
+                            <strong>درجة خط الأساس (Baseline):</strong> 
+                            <input type="number" id="form-baseline-input" value="78" oninput="recalcForm()" class="bg-white border border-gray-300 rounded p-1 w-16 font-bold text-gray-800 mt-1 text-center transition-all"> / 100
+                        </div>
+
+                        <div class="col-span-2 sm:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 pt-3 border-t border-royalBeige-200 items-center">
+                            <div class="flex items-center gap-2">
+                                <strong class="whitespace-nowrap">علامة الاختبار الكتابي (إن وجد):</strong>
+                                <input type="number" id="form-written-exam" min="0" max="100" placeholder="ان وجد" class="bg-white border border-gray-300 rounded px-2 py-1 w-24 text-center font-bold text-deepGreen-900"> / 100
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <strong class="whitespace-nowrap text-adminGold-600">النمط الإداري (حسب التصنيف البُعدي):</strong>
+                                <select id="form-personality-dim" onchange="toggleCustomPersonalityInput()" class="bg-white border border-adminGold-500 rounded px-2 py-1 text-xs font-bold text-deepGreen-900 focus:outline-none w-full">
+                                    <option value="">-- اختر النمط السلوكي الإداري --</option>
+                                    <option value="النمط المبتكر والاستراتيجي">النمط المبتكر والاستراتيجي (للتحول الرقمي، إعادة الهندسة، والتطوير)</option>
+                                    <option value="النمط القائد والتمكيني">النمط القائد والتمكيني (للإدارة العليا، رؤساء الدوائر، وبناء القدرات)</option>
+                                    <option value="النمط الدبلوماسي والخدمي">النمط الدبلوماسي والخدمي (لخدمة المتعاملين، العلاقات العامة، والاتصال)</option>
+                                    <option value="النمط المنفذ والرقابي">النمط المنفذ والرقابي (للمحاسبة، الرقابة الداخلية، التوريد، والأرشيف)</option>
+                                    <option value="custom">إدخال يدوي مخصص لنمط الشخصية...</option>
+                                </select>
+                                <input type="text" id="form-personality-custom" placeholder="اكتب نمط الشخصية يدوياً..." class="bg-white border border-adminGold-500 rounded p-1 text-xs font-bold text-deepGreen-900 hidden mt-1">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <strong class="whitespace-nowrap text-deepGreen-900">القرار الإداري المستهدف والتوصية:</strong>
+                                <select id="form-decision-type" onchange="toggleOtherLocationInput()" class="bg-white border border-deepGreen-800 rounded px-2 py-1 text-xs font-bold text-deepGreen-900">
+                                    <option value="تثبيت">تثبيت بالوظيفة الحالية (Confirmation)</option>
+                                    <option value="نقل">نقل وتدوير لوظيفة أنسب (Job Transfer)</option>
+                                    <option value="مكان_آخر">توصية وتدوير بمكان آخر (Other Department)</option>
+                                    <option value="تدريب">إلحاق بمسار تدريبي وتمكيني (Training Required)</option>
+                                </select>
+                                <input type="text" id="form-other-location-name" placeholder="أدخل اسم المكان / المديرية / القسم الآخر..." class="bg-white border border-adminGold-600 rounded p-1 text-xs font-bold text-deepGreen-900 hidden mt-1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Table -->
+                    <div class="mb-6 overflow-x-auto">
+                        <table class="w-full text-right border-collapse text-xs border border-gray-300">
+                            <thead>
+                                <tr class="bg-deepGreen-800 text-white">
+                                    <th class="p-2.5 border border-gray-300">محور القياس</th>
+                                    <th class="p-2.5 border border-gray-300 text-center">الوزن</th>
+                                    <th class="p-2.5 border border-gray-300 text-center">الدرجة المباشرة (100)</th>
+                                    <th class="p-2.5 border border-gray-300 text-center">الدرجة الموزونة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-2.5 border border-gray-300 font-bold">1. السمات الشخصية والسلوكية (النمط الإداري)</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">20%</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">
+                                        <input type="number" id="form-score-1" min="0" max="100" value="90" oninput="recalcForm()" class="w-16 p-1 text-center font-bold border rounded bg-royalBeige-50">
+                                    </td>
+                                    <td id="form-weighted-1" class="p-2.5 border border-gray-300 text-center font-bold text-deepGreen-800">18.0</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 border border-gray-300 font-bold">2. الجدارات الفنية والتخصصية</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">30%</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">
+                                        <input type="number" id="form-score-2" min="0" max="100" value="85" oninput="recalcForm()" class="w-16 p-1 text-center font-bold border rounded bg-royalBeige-50">
+                                    </td>
+                                    <td id="form-weighted-2" class="p-2.5 border border-gray-300 text-center font-bold text-deepGreen-800">25.5</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 border border-gray-300 font-bold">3. الإنتاجية والالتزام الانضباطي</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">30%</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">
+                                        <input type="number" id="form-score-3" min="0" max="100" value="88" oninput="recalcForm()" class="w-16 p-1 text-center font-bold border rounded bg-royalBeige-50">
+                                    </td>
+                                    <td id="form-weighted-3" class="p-2.5 border border-gray-300 text-center font-bold text-deepGreen-800">26.4</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 border border-gray-300 font-bold">4. الابتكار والقيمة المضافة</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">20%</td>
+                                    <td class="p-2.5 border border-gray-300 text-center">
+                                        <input type="number" id="form-score-4" min="0" max="100" value="80" oninput="recalcForm()" class="w-16 p-1 text-center font-bold border rounded bg-royalBeige-50">
+                                    </td>
+                                    <td id="form-weighted-4" class="p-2.5 border border-gray-300 text-center font-bold text-deepGreen-800">16.0</td>
+                                </tr>
+                                <tr class="bg-royalBeige-200 font-black">
+                                    <td class="p-2.5 border border-gray-300 text-right" colspan="3">المجموع النهائي الموزون من 100:</td>
+                                    <td id="form-final-total" class="p-2.5 border border-gray-300 text-center text-sm text-deepGreen-900">85.9</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-2 border-adminGold-500 bg-royalBeige-50 p-4 rounded-lg mb-8">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-xs text-deepGreen-900">التقدير النهائي المعتمد: <strong id="form-rating-text" class="text-blue-700 font-extrabold text-sm">جيد جداً</strong></span>
+                            <span class="text-[11px] text-gray-500">حسب السلم الموحد</span>
+                        </div>
+                        <div class="text-xs text-gray-800">
+                            <strong>التوصية الإدارية النهائية والشاغر المناسب:</strong>
+                            <p id="form-rec-text" class="mt-1 font-semibold text-deepGreen-900">تثبيت الموظف في موقعه الحالي مع منحه مكافأة تشجيعية وإدراجه في البرامج القيادية.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-center text-xs pt-4 border-t border-gray-300 print-break-inside">
+                        <div>
+                            <span class="font-bold text-gray-700 block mb-8">المسؤول المباشر</span>
+                            <div class="border-b border-dashed border-gray-400 w-3/4 mx-auto mb-1"></div>
+                            <span class="text-[10px] text-gray-500">التوقيع والتاريخ</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-gray-700 block mb-8">أخصائي المقابلات</span>
+                            <div class="border-b border-dashed border-gray-400 w-3/4 mx-auto mb-1"></div>
+                            <span class="text-[10px] text-gray-500">التوقيع والتاريخ</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-gray-700 block mb-8">اعتماد مدير التنمية الإدارية</span>
+                            <div class="border-b border-dashed border-gray-400 w-3/4 mx-auto mb-1"></div>
+                            <span class="text-[10px] text-gray-500">التوقيع والختم</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. QUESTION BANK -->
+            <div id="tab-questionBank" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-book-open text-2xl"></i></span>
+                            <div>
+                                <h2 class="text-2xl font-bold text-deepGreen-900">7. بنك الأسئلة الشامل (مع إمكانية التعديل والحذف للأسئلة)</h2>
+                                <p class="text-sm text-gray-650">بنك مخصص يضم أسئلة القبعات والتخصص والإدارة لكافة الشواغر الـ 21</p>
+                            </div>
+                        </div>
+                        <button onclick="openAddQuestionModal()" class="bg-deepGreen-800 hover:bg-deepGreen-900 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow">
+                            <i class="fa-solid fa-plus"></i> إضافة سؤال جديد للبنك
+                        </button>
+                    </div>
+
+                    <!-- Modal for Adding/Editing Questions -->
+                    <div id="addQuestionBox" class="bg-royalBeige-100 p-4 rounded-xl border border-adminGold-500 mb-6 hidden space-y-3">
+                        <h3 id="modalTitleText" class="font-bold text-xs text-deepGreen-950 flex items-center gap-1">
+                            <i class="fa-solid fa-lock text-adminGold-600"></i> نافذة إضافة وتعديل أسئلة بنك التنمية الإدارية
+                        </h3>
+                        <input type="hidden" id="editQuestionIndex" value="-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="font-bold block mb-1">القبعة الفكرية / التصنيف:</label>
+                                <select id="newQHat" class="w-full p-2 border border-gray-300 rounded bg-white font-bold">
+                                    <option value="white">القبعة البيضاء ⚪ (حقائق وبيانات)</option>
+                                    <option value="red">القبعة الحمراء 🔴 (مشاعر وتواصل)</option>
+                                    <option value="black">القبعة السوداء 🖤 (مخاطر وامتثال)</option>
+                                    <option value="yellow">القبعة الصفراء 🟡 (فرص وتطوير)</option>
+                                    <option value="green">القبعة الخضراء 🟢 (ابتكار وحلول)</option>
+                                    <option value="blue">القبعة الزرقاء 🔵 (قيادة وحوكمة)</option>
+                                    <option value="admin">سؤال إداري وتنظيمي 🏢</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="font-bold block mb-1">الشاغر المستهدف:</label>
+                                <select id="newQVacancy" class="w-full p-2 border border-gray-300 rounded bg-white font-bold">
+                                    <option value="مدير مديرية فرعية">مدير مديرية فرعية</option>
+                                    <option value="معاون مدير مديرية">معاون مدير مديرية</option>
+                                    <option value="مدير مكتب">مدير مكتب</option>
+                                    <option value="مساعد اداري اول">مساعد إداري أول</option>
+                                    <option value="مساعد دعم لوجستي وتنفيذي">مساعد دعم لوجستي وتنفيذي</option>
+                                    <option value="أخصائي رقابة داخلية">أخصائي رقابة داخلية</option>
+                                    <option value="أخصائي تخطيط وإحصاء">أخصائي تخطيط وإحصاء</option>
+                                    <option value="موظف ديوان وأرشفة">موظف ديوان وأرشفة</option>
+                                    <option value="مشرف الخدمات العامة">مشرف الخدمات العامة</option>
+                                    <option value="أخصائي المشتريات والتوريد والمستودعات">أخصائي المشتريات والتوريد والمستودعات</option>
+                                    <option value="أخصائي المحاسبة">أخصائي المحاسبة</option>
+                                    <option value="سائق">سائق</option>
+                                    <option value="مراسل">مراسل</option>
+                                    <option value="أخصائي تخطيط وتوظيف موارد بشرية">أخصائي تخطيط وتوظيف موارد بشرية</option>
+                                    <option value="رئيس دائرة بيانات موارد بشرية">رئيس دائرة بيانات موارد بشرية</option>
+                                    <option value="أخصائي تدقيق بيانات وظيفية">أخصائي تدقيق بيانات وظيفية</option>
+                                    <option value="أخصائي توصيف وهندسة وظائف">أخصائي توصيف وهندسة وظائف</option>
+                                    <option value="أخصائي إعادة هندسة عمليات وتبسيط إجراءات">أخصائي إعادة هندسة عمليات وتبسيط إجراءات</option>
+                                    <option value="أخصائي قياس أداء مؤسسي">أخصائي قياس أداء مؤسسي</option>
+                                    <option value="أخصائي تحسين خدمات حكومية">أخصائي تحسين خدمات حكومية</option>
+                                    <option value="مدير مركز تدريب">مدير مركز تدريب</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="font-bold block mb-1">المؤشر / المهارة:</label>
+                                <input type="text" id="newQTrait" placeholder="مثال: قيادة وتخطيط، انضباط مالي..." class="w-full p-2 border border-gray-300 rounded bg-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-bold block mb-1 text-xs">نص السؤال المقترح:</label>
+                            <textarea id="newQText" rows="2" class="w-full p-2 text-xs border border-gray-300 rounded bg-white" placeholder="اكتب صياغة السؤال المرتبط بالشاغر..."></textarea>
+                        </div>
+                        <div>
+                            <label class="font-bold block mb-1 text-xs">الإجابة النموذجية المرجوة:</label>
+                            <textarea id="newQAnswer" rows="2" class="w-full p-2 text-xs border border-gray-300 rounded bg-white" placeholder="اكتب مؤشر الإجابة النموذجية..."></textarea>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button onclick="saveNewQuestion()" class="bg-adminGold-500 hover:bg-adminGold-600 text-white px-4 py-1.5 rounded text-xs font-bold">حفظ بالبنك</button>
+                            <button onclick="closeAddQuestionModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-xs">إلغاء</button>
+                        </div>
+                    </div>
+
+                    <div id="fullBankContainer" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- 8. GUIDE -->
+            <div id="tab-interviewGuide" class="tab-content space-y-6">
+                <div class="bg-white rounded-xl p-6 sm:p-8 border border-royalBeige-300 shadow-sm border-r-8 border-r-deepGreen-800">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-3 bg-royalBeige-200 text-deepGreen-800 rounded-lg"><i class="fa-solid fa-graduation-cap text-2xl"></i></span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-deepGreen-900">8. الدليل الاسترشادي للأنماط الإدارية وقبعات التفكير الست</h2>
+                            <p class="text-sm text-gray-600">الربط النفسي والتنظيمي المعتمد لتحديد الشواغر المناسبة وتوجيه القرارات الإدارية</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 text-sm text-gray-700">
+                        <div class="bg-royalBeige-50 p-5 rounded-lg border border-royalBeige-300">
+                            <h3 class="font-bold text-deepGreen-900 text-base mb-2"><i class="fa-solid fa-cube text-adminGold-500 ml-2"></i>الأنماط الإدارية الأربعة الأساسية في المؤسسات الحكومية</h3>
+                            <p class="leading-relaxed text-xs mb-4">
+                                تم اعتماد التصنيف المباشر في أربع أنماط سلوكية رئيسية لتسهيل تقييم الأداء والمطابقة السريعة مع الشواغر[cite: 1]:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div class="bg-white p-3 rounded border border-gray-300">
+                                    <strong class="text-deepGreen-900 block mb-1">1. النمط المبتكر والاستراتيجي:</strong>
+                                    <span>يتميز بالمرونة والتطلع المستقبلي، ملائم جداً لإعادة هندسة العمليات، التحول الرقمي، وتطوير الخدمات.</span>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-gray-300">
+                                    <strong class="text-deepGreen-900 block mb-1">2. النمط القائد والتمكيني:</strong>
+                                    <span>يتميز بالحزم والحوكمة والقدرة على توجيه الفرق، ملائم للمناصب الإدارية العليا ورئاسة الدوائر وبناء القدرات.</span>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-gray-300">
+                                    <strong class="text-deepGreen-900 block mb-1">3. النمط الدبلوماسي والخدمي:</strong>
+                                    <span>يتميز بالتعاطف والذكاء الوجداني، ملائم لخدمة المتعاملين، العلاقات العامة، وتنمية الثقافة المؤسسية.</span>
+                                </div>
+                                <div class="bg-white p-3 rounded border border-gray-300">
+                                    <strong class="text-deepGreen-900 block mb-1">4. النمط المنفذ والرقابي:</strong>
+                                    <span>يتميز بالدقة، الالتزام بالقوانين، والتحليل الوثائقي، ملائم للمحاسبة، الرقابة الداخلية، التوريد، والأرشيف.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6 Hats Guide -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-gray-500 shadow-sm">
+                                <h4 class="font-bold text-gray-800 mb-1">⚪ القبعة البيضاء (الحقائق)</h4>
+                                <p class="text-xs text-gray-600 mb-2">الدقة والتوثيق والتحليل الرقمي والحياد.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: المحاسبة، الأرشيف، تدقيق البيانات.</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-red-600 shadow-sm">
+                                <h4 class="font-bold text-red-700 mb-1">🔴 القبعة الحمراء (المشاعر)</h4>
+                                <p class="text-xs text-gray-600 mb-2">الذكاء العاطفي والتواصل وامتصاص الغضب.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: خدمة المتعاملين، العلاقات العامة.</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-slate-800 shadow-sm">
+                                <h4 class="font-bold text-slate-900 mb-1">🖤 القبعة السوداء (المخاطر)</h4>
+                                <p class="text-xs text-gray-600 mb-2">التفكير النقدي واكتشاف الثغرات والامتثال القانوني.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: الرقابة الداخلية، الشؤون القانونية.</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-amber-500 shadow-sm">
+                                <h4 class="font-bold text-amber-700 mb-1">🟡 القبعة الصفراء (الفرص)</h4>
+                                <p class="text-xs text-gray-600 mb-2">التفكير الإيجابي والنظرة التطويرية للموارد.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: الاستقطاب، إدارة المبادرات.</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-emerald-600 shadow-sm">
+                                <h4 class="font-bold text-emerald-700 mb-1">🟢 القبعة الخضراء (الابتكار)</h4>
+                                <p class="text-xs text-gray-600 mb-2">تقديم الحلول البديلة وتبسيط الإجراءات.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: إعادة هندسة العمليات، التحول الرقمي.</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-300 border-t-4 border-t-blue-600 shadow-sm">
+                                <h4 class="font-bold text-blue-700 mb-1">🔵 القبعة الزرقاء (القيادة)</h4>
+                                <p class="text-xs text-gray-600 mb-2">الحوكمة والتوجيه والرؤية الشاملة وإدارة فرق العمل.</p>
+                                <span class="text-[11px] font-bold text-deepGreen-800 block bg-royalBeige-100 p-1.5 rounded">الشواغر الملائمة: الإدارة العليا، رؤساء الدوائر.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-deepGreen-900 text-royalBeige-200 text-xs py-6 border-t-2 border-adminGold-500 no-print mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-bold text-adminGold-400">مديرية التنمية الإدارية بمحافظة درعا - المنظومة المؤسسية الموحدة المدمجة</p>
+            <p>© 2026 جميع الحقوق محفوظة. تم التطوير وفق معايير التقييم السلوكي والتنظيمي المعتمدة.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        let currentSessionQuestions = [];
+        let interviewScores = {};
+        let interviewRadarChart = null;
+        let lastInterviewResult = null;
+
+        // نظام التنبيهات المخصص بروح المنصة (بدلاً من alert الكروم)
+        function showPlatformAlert(msg) {
+            document.getElementById('customAlertMessage').innerText = msg;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
+
+        function createMasterQuestionBank() {
+            const list = [];
+            const vacancies = [
+                "مدير مديرية فرعية", "معاون مدير مديرية", "مدير مكتب", "مساعد اداري اول", "مساعد دعم لوجستي وتنفيذي",
+                "أخصائي رقابة داخلية", "أخصائي تخطيط وإحصاء", "موظف ديوان وأرشفة", "مشرف الخدمات العامة",
+                "أخصائي المشتريات والتوريد والمستودعات", "أخصائي المحاسبة", "سائق", "مراسل",
+                "أخصائي تخطيط وتوظيف موارد بشرية", "رئيس دائرة بيانات موارد بشرية", "أخصائي تدقيق بيانات وظيفية",
+                "أخصائي توصيف وهندسة وظائف", "أخصائي إعادة هندسة عمليات وتبسيط إجراءات", "أخصائي قياس أداء مؤسسي",
+                "أخصائي تحسين خدمات حكومية", "مدير مركز تدريب"
+            ];
+
+            let idCounter = 100;
+
+            vacancies.forEach(v => {
+                const qSpecs = [
+                    { hat: 'white', hatName: 'القبعة البيضاء ⚪', trait: 'الدقة والبيانات التخصصية', text: `ما هي البيانات والإحصاءات الأساسية التي تتفقدها يومياً في مهام (${v}) لضمان خلو العمل من الأخطاء؟`, answer: `التحقق المستندي من البيانات الأصلية، مطابقة السجلات التخصصية لشاغر (${v})، ورصد المخرجات إحصائياً.` },
+                    { hat: 'white', hatName: 'القبعة البيضاء ⚪', trait: 'التوثيق والأرشيف التنظيمي', text: `كيف توثق المعاملات الدورية في شاغر (${v}) لضمان سهولة استرجاعها عند طلب الجهات الرقابية؟`, answer: `التوثيق الأرشيفي المزدوج (ورقي ورقمي) وفق الترميز المعياري للمديرية.` },
+                    { hat: 'red', hatName: 'القبعة الحمراء 🔴', trait: 'الذكاء العاطفي والتواصل', text: `عند حدوث سوء فهم أو ضغط عمل شديد في مهام (${v})، كيف تدير التواصل مع الزملاء أو المراجعين؟`, answer: `الاستماع الفعال، الامتصاص الهادئ للانفعالات، والمحافظة على اللباقة المؤسسية.` },
+                    { hat: 'black', hatName: 'القبعة السوداء 🖤', trait: 'إدارة المخاطر والامتثال', text: `ما هي أبرز مخاطر المخالفات أو الثغرات التشغيلية المحتملة في عمل (${v}) وكيف تطبق القوانين للوقاية منها؟`, answer: `تحديد نقاط الخلل القانونية والتنفيذية، وتطبيق ضوابط الامتثال والرقابة الذاتية الصارمة.` },
+                    { hat: 'black', hatName: 'القبعة السوداء 🖤', trait: 'التقييم النقدي للعمليات', text: `كيف تتعامل إذا طُلب منك تنفيذ إجراء يمارس فيه تجاوز على الضوابط المعتمدة لـ (${v})؟`, answer: `الامتناع القانوني المؤدب، التوضيح للمسؤول وفق التعاميم النافذة، ورفع مذكرة رسمية توثيقية.` },
+                    { hat: 'yellow', hatName: 'القبعة الصفراء 🟡', trait: 'استثمار الفرص وتطوير الأداء', text: `كيف تستغل الإمكانيات المتاحة لتحقيق أعلى كفاءة تشغيلية في موقع (${v}) بأقل التكاليف؟`, answer: `استثمار الحلول الذاتية، ترشيد الموارد، وتوجيه الفرص المتاحة نحو رفع الجودة.` },
+                    { hat: 'green', hatName: 'القبعة الخضراء 🟢', trait: 'الابتكار والتطوير التكنولوجي', text: `اقترح فكرة مبتكرة واحدة لتطوير طريقة أداء مهام (${v}) وتخفيض وقت الإنجاز؟`, answer: `اعتماد الأتمتة الإجرائية، استخدام نماذج إلكترونية موحدة، وإلغاء الخطوات التكرارية.` },
+                    { hat: 'blue', hatName: 'القبعة الزرقاء 🔵', trait: 'الحوكمة والتوجيه القيادي', text: `كيف تضمن ضبط جودة المخرجات والالتزام بالجدول الزمني المحدد لعمل (${v})؟`, answer: `وضع خطة عمل زمنية مؤطرة، تحديد الأولويات، ومتابعة مؤشرات الإنجاز بانتظام.` },
+                    { hat: 'admin', hatName: 'سؤال إداري وتنظيمي 🏢', trait: 'الانضباط والواجبات الوظيفية', text: `ما هي واجبات وأخلاقيات الوظيفة العامة الأكثر أهمية التي تلتزم بها في شاغر (${v})؟`, answer: `النزاهة، السرية المؤسسية، الالتزام بالدوام الرسمي، واحترام التسلسل الإداري.` },
+                    { hat: 'admin', hatName: 'سؤال إداري وتنظيمي 🏢', trait: 'التكيف والحلول الإدارية', text: `كيف تتعامل مع التوجيهات الإدارية الطارئة في حال تضاربها مع الجدول التشغيلي المخطط لـ (${v})؟`, answer: `إعادة ترتيب الأولويات بحسب الأهمية والاستعجال، وإعلام الرئاسة المباشرة بالتحديثات.` }
+                ];
+
+                qSpecs.forEach(q => {
+                    idCounter++;
+                    list.push({
+                        id: idCounter,
+                        hat: q.hat,
+                        hatName: q.hatName,
+                        vacancy: v,
+                        text: q.text,
+                        answer: q.answer,
+                        trait: q.trait
+                    });
+                });
+            });
+
+            return list;
+        }
+
+        let fullQuestionBank = createMasterQuestionBank();
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-adminGold-400', 'bg-deepGreen-900', 'border-b-2', 'border-adminGold-400');
+                btn.classList.add('text-royalBeige-200');
+            });
+
+            const targetContent = document.getElementById('tab-' + tabId);
+            if (targetContent) targetContent.classList.add('active');
+
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('text-adminGold-400', 'bg-deepGreen-900', 'border-b-2', 'border-adminGold-400');
+                activeBtn.classList.remove('text-royalBeige-200');
+            }
+        }
+
+        function toggleCustomPersonalityInput() {
+            const val = document.getElementById('form-personality-dim').value;
+            const customInput = document.getElementById('form-personality-custom');
+            if (val === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        function checkCustomVacancy() {
+            const sel = document.getElementById('targetVacancySelect').value;
+            const customInput = document.getElementById('targetVacancyCustom');
+            if (sel === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        function toggleBaselineState() {
+            const stage = document.getElementById('form-stage-select').value;
+            const baselineInput = document.getElementById('form-baseline-input');
+            const baselineContainer = document.getElementById('baseline-container');
+
+            if (stage === 'stage1') {
+                baselineInput.disabled = true;
+                baselineInput.value = '';
+                baselineContainer.classList.add('disabled-dim');
+            } else {
+                baselineInput.disabled = false;
+                baselineContainer.classList.remove('disabled-dim');
+                if (!baselineInput.value) baselineInput.value = '78';
+            }
+            recalcForm();
+        }
+
+        function toggleOtherLocationInput() {
+            const decision = document.getElementById('form-decision-type').value;
+            const otherInput = document.getElementById('form-other-location-name');
+
+            if (decision === 'مكان_آخر') {
+                otherInput.classList.remove('hidden');
+                otherInput.focus();
+            } else {
+                otherInput.classList.add('hidden');
+                otherInput.value = '';
+            }
+            recalcForm();
+        }
+
+        function syncFromNum(index) {
+            const numVal = document.getElementById('calc-num-' + index).value;
+            document.getElementById('calc-input-' + index).value = numVal;
+            calculateAppraisal();
+        }
+
+        function calculateAppraisal() {
+            const s1 = parseFloat(document.getElementById('calc-input-1').value) || 0;
+            const s2 = parseFloat(document.getElementById('calc-input-2').value) || 0;
+            const s3 = parseFloat(document.getElementById('calc-input-3').value) || 0;
+            const s4 = parseFloat(document.getElementById('calc-input-4').value) || 0;
+
+            document.getElementById('calc-num-1').value = s1;
+            document.getElementById('calc-num-2').value = s2;
+            document.getElementById('calc-num-3').value = s3;
+            document.getElementById('calc-num-4').value = s4;
+
+            const w1 = s1 * 0.20;
+            const w2 = s2 * 0.30;
+            const w3 = s3 * 0.30;
+            const w4 = s4 * 0.20;
+
+            document.getElementById('calc-w1').innerText = `الموزون: ${w1.toFixed(1)} / 20`;
+            document.getElementById('calc-w2').innerText = `الموزون: ${w2.toFixed(1)} / 30`;
+            document.getElementById('calc-w3').innerText = `الموزون: ${w3.toFixed(1)} / 30`;
+            document.getElementById('calc-w4').innerText = `الموزون: ${w4.toFixed(1)} / 20`;
+
+            const total = w1 + w2 + w3 + w4;
+            document.getElementById('calc-total-score').innerText = total.toFixed(1);
+
+            const ratingBadge = document.getElementById('calc-rating-badge');
+            const recBox = document.getElementById('calc-recommendation');
+
+            if (total >= 85) {
+                ratingBadge.innerText = 'ممتاز / تثبيت واثق';
+                ratingBadge.className = 'mt-1 text-sm font-bold px-3 py-1.5 rounded bg-emerald-600 text-white text-center';
+                recBox.innerText = 'تثبيت الموظف فوراً بالوظيفة الحالية مع إدراجه في برامج القيادات الواعدة.';
+            } else if (total >= 70) {
+                ratingBadge.innerText = 'جيد / تدوير أو تدريب';
+                ratingBadge.className = 'mt-1 text-sm font-bold px-3 py-1.5 rounded bg-blue-600 text-white text-center';
+                recBox.innerText = 'تحديد خيار إما النقل والتدوير لوظيفة أكثر ملاءمة لأنماطه أو إلحاقه ببرنامج تدريبي.';
+            } else {
+                ratingBadge.innerText = 'ضعيف / تدريب مكثف';
+                ratingBadge.className = 'mt-1 text-sm font-bold px-3 py-1.5 rounded bg-rose-600 text-white text-center';
+                recBox.innerText = 'وضع الموظف تحت فترة معالجة وتدريب مكثفة لمدة 3 أشهر وإعادة التقييم.';
+            }
+        }
+
+        function applyToOfficialForm() {
+            document.getElementById('form-score-1').value = document.getElementById('calc-input-1').value;
+            document.getElementById('form-score-2').value = document.getElementById('calc-input-2').value;
+            document.getElementById('form-score-3').value = document.getElementById('calc-input-3').value;
+            document.getElementById('form-score-4').value = document.getElementById('calc-input-4').value;
+            recalcForm();
+            switchTab('form');
+        }
+
+        function recalcForm() {
+            const s1 = parseFloat(document.getElementById('form-score-1').value) || 0;
+            const s2 = parseFloat(document.getElementById('form-score-2').value) || 0;
+            const s3 = parseFloat(document.getElementById('form-score-3').value) || 0;
+            const s4 = parseFloat(document.getElementById('form-score-4').value) || 0;
+
+            const w1 = s1 * 0.20;
+            const w2 = s2 * 0.30;
+            const w3 = s3 * 0.30;
+            const w4 = s4 * 0.20;
+
+            document.getElementById('form-weighted-1').innerText = w1.toFixed(1);
+            document.getElementById('form-weighted-2').innerText = w2.toFixed(1);
+            document.getElementById('form-weighted-3').innerText = w3.toFixed(1);
+            document.getElementById('form-weighted-4').innerText = w4.toFixed(1);
+
+            const total = w1 + w2 + w3 + w4;
+            document.getElementById('form-final-total').innerText = total.toFixed(1);
+
+            const ratingText = document.getElementById('form-rating-text');
+            const recText = document.getElementById('form-rec-text');
+            const decisionType = document.getElementById('form-decision-type').value;
+            const otherLocName = document.getElementById('form-other-location-name').value.trim();
+
+            let decisionTextDisplay = "";
+            if (decisionType === 'تثبيت') decisionTextDisplay = "تثبيت بالوظيفة الحالية";
+            else if (decisionType === 'نقل') decisionTextDisplay = "نقل وتدوير وظيفي";
+            else if (decisionType === 'مكان_آخر') decisionTextDisplay = `توصية بالنقل إلى مكان آخر: (${otherLocName || 'لم يحدد المكان بعد'})`;
+            else if (decisionType === 'تدريب') decisionTextDisplay = "إلحاق بمسار تدريبي وتمكيني";
+
+            if (total >= 85) {
+                ratingText.innerText = 'ممتاز (كفاءة عالية)';
+                ratingText.className = 'text-emerald-700 font-extrabold text-sm';
+                recText.innerText = `التوصية النهائية: القرار المعتمد هو (${decisionTextDisplay}) مع منحه مكافأة تميز تشجيعية.`;
+            } else if (total >= 70) {
+                ratingText.innerText = 'جيد جداً / جيد';
+                ratingText.className = 'text-blue-700 font-extrabold text-sm';
+                recText.innerText = `التوصية النهائية: القرار المعتمد هو (${decisionTextDisplay}) مع وضع خطة تمكين فردية.`;
+            } else {
+                ratingText.innerText = 'ضعيف / غير كافٍ';
+                ratingText.className = 'text-rose-700 font-extrabold text-sm';
+                recText.innerText = `التوصية النهائية: القرار المعتمد هو (${decisionTextDisplay}) وإلزام الموظف بخطة معالجة وتقويم.`;
+            }
+        }
+
+        // توليد جلسة المقابلة مع فحص الحقول عبر رسائل المنصة المخصصة
+        function generateSession() {
+            const name = document.getElementById('candidateName').value.trim();
+            let vacancy = document.getElementById('targetVacancySelect').value;
+            if (vacancy === 'custom') {
+                vacancy = document.getElementById('targetVacancyCustom').value.trim();
+                if (!vacancy) {
+                    showPlatformAlert('عذراً، يرجى كتابة مسمى الشاغر المخصص يدوياً بشكل كامل قبل بدء المقابلة.');
+                    return;
+                }
+            }
+
+            if (!name) {
+                showPlatformAlert('عذراً، يرجى إدخال اسم الموظف المرشح الثلاثي أولاً لفتح جلسة المقابلة الشفهية.');
+                return;
+            }
+
+            let tailoredQuestions = fullQuestionBank.filter(q => q.vacancy === vacancy);
+            if (tailoredQuestions.length < 10) {
+                tailoredQuestions = createMasterQuestionBank().filter(q => q.vacancy === 'أخصائي تخطيط وتوظيف موارد بشرية');
+            }
+
+            // نسخة عميقة للتحكم والتحدث ضمن الجلسة
+            currentSessionQuestions = JSON.parse(JSON.stringify(tailoredQuestions.slice(0, 10)));
+
+            interviewScores = {};
+            currentSessionQuestions.forEach(q => { interviewScores[q.id] = 3; });
+
+            renderExamQuestions();
+            document.getElementById('examSection').style.display = 'block';
+            document.getElementById('reportSection').style.display = 'none';
+            document.getElementById('examSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // عرض الأسئلة مع أزرار التحكم (تعديل، حذف، استبعاد)
+        function renderExamQuestions() {
+            const container = document.getElementById('questionsList');
+            container.innerHTML = '';
+
+            currentSessionQuestions.forEach((q, idx) => {
+                if (q.excluded) return; // تخطي المستبعاد
+
+                const card = document.createElement('div');
+                card.id = `q-card-${q.id}`;
+                card.className = `bg-royalBeige-50 p-5 rounded-xl border border-royalBeige-300 shadow-sm space-y-3 transition-all ${q.dimmed ? 'opacity-50 bg-gray-100' : ''}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-royalBeige-200 pb-2 flex-wrap gap-2">
+                        <span class="font-bold text-xs text-deepGreen-900">سؤال (${idx + 1}): <span class="text-adminGold-600">${q.hatName}</span></span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] bg-adminGold-500 text-white px-2 py-0.5 rounded font-bold">شاغر: ${q.vacancy}</span>
+                            <!-- أزرار التحكم الفوري: تعديل، استبعاد، حذف -->
+                            <button onclick="editSessionQuestion(${q.id})" title="تعديل السؤال" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[11px]"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                            <button onclick="toggleExcludeQuestion(${q.id})" title="استبعاد مؤقت" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[11px]"><i class="fa-solid fa-eye-slash"></i> ${q.dimmed ? 'إلغاء الاستبعاد' : 'استبعاد'}</button>
+                            <button onclick="removeSessionQuestion(${q.id})" title="حذف السؤال" class="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[11px]"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                    <p id="q-text-${q.id}" class="text-sm font-bold text-gray-800 leading-relaxed">${q.text}</p>
+                    <div class="bg-white p-3 rounded-lg border border-royalBeige-200 text-xs text-gray-600">
+                        <strong class="text-deepGreen-800 block mb-1">مؤشر الإجابة النموذجية:</strong>
+                        <span id="q-ans-${q.id}">${q.answer}</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2">
+                        <span class="text-xs font-bold text-deepGreen-900">تقييم إجابة المرشح (من 1 إلى 5):</span>
+                        <div class="flex gap-2">
+                            ${[1, 2, 3, 4, 5].map(score => `
+                                <button type="button" onclick="setQuestionScore(${q.id},${score}, this)" class="score-btn ${score === 3 ? 'selected' : ''}">${score}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // تعديل سؤال في الجلسة الحالية
+        function editSessionQuestion(qId) {
+            const q = currentSessionQuestions.find(item => item.id === qId);
+            if (!q) return;
+            const newText = prompt("تعديل نص السؤال في المقابلة:", q.text);
+            if (newText !== null && newText.trim() !== "") {
+                q.text = newText.trim();
+                const newAns = prompt("تعديل مؤشر الإجابة النموذجية:", q.answer);
+                if (newAns !== null && newAns.trim() !== "") {
+                    q.answer = newAns.trim();
+                }
+                renderExamQuestions();
+                showPlatformAlert("تم تعديل السؤال بنجاح ضمن جلسة المقابلة.");
+            }
+        }
+
+        // استبعاد / إلغاء استبعاد السؤال ضمن الجلسة
+        function toggleExcludeQuestion(qId) {
+            const q = currentSessionQuestions.find(item => item.id === qId);
+            if (q) {
+                q.dimmed = !q.dimmed;
+                renderExamQuestions();
+            }
+        }
+
+        // حذف السؤال نهائياً من الجلسة الحالية
+        function removeSessionQuestion(qId) {
+            if (confirm("هل أنت متأكد من حذف هذا السؤال من جلسة المقابلة الحالية؟")) {
+                currentSessionQuestions = currentSessionQuestions.filter(item => item.id !== qId);
+                renderExamQuestions();
+                showPlatformAlert("تم حذف السؤال من جلسة المقابلة.");
+            }
+        }
+
+        function setQuestionScore(qId, score, btn) {
+            interviewScores[qId] = score;
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function calculateResults() {
+            const name = document.getElementById('candidateName').value.trim();
+            let vacancy = document.getElementById('targetVacancySelect').value;
+            if (vacancy === 'custom') {
+                vacancy = document.getElementById('targetVacancyCustom').value.trim() || 'شاغر إداري مخصص';
+            }
+
+            const hatTotals = { white: 0, red: 0, black: 0, yellow: 0, green: 0, blue: 0, admin: 0 };
+            const hatCounts = { white: 0, red: 0, black: 0, yellow: 0, green: 0, blue: 0, admin: 0 };
+
+            currentSessionQuestions.forEach(q => {
+                if (q.dimmed || q.excluded) return; // استثناء المستبعد والمطفي من الحساب
+                const s = interviewScores[q.id] || 3;
+                if (hatTotals[q.hat] !== undefined) {
+                    hatTotals[q.hat] += s;
+                    hatCounts[q.hat] += 1;
+                }
+            });
+
+            const hatAverages = {};
+            let maxAvg = -1;
+            let dominantHatKey = 'blue';
+
+            Object.keys(hatTotals).forEach(hat => {
+                const avg = hatCounts[hat] > 0 ? (hatTotals[hat] / hatCounts[hat]) : 0;
+                hatAverages[hat] = avg;
+                if (avg > maxAvg && hat !== 'admin') {
+                    maxAvg = avg;
+                    dominantHatKey = hat;
+                }
+            });
+
+            let totalSum = 0;
+            let totalCount = 0;
+            currentSessionQuestions.forEach(q => {
+                if (!q.dimmed && !q.excluded) {
+                    totalSum += (interviewScores[q.id] || 3);
+                    totalCount++;
+                }
+            });
+            const globalScore100 = totalCount > 0 ? ((totalSum / (totalCount * 5)) * 100) : 60;
+
+            const hatNamesMap = {
+                white: 'القبعة البيضاء ⚪ (بيانات وحقائق)',
+                red: 'القبعة الحمراء 🔴 (مشاعر وتواصل)',
+                black: 'القبعة السوداء 🖤 (مخاطر وامتثال)',
+                yellow: 'القبعة الصفراء 🟡 (فرص وإيجابية)',
+                green: 'القبعة الخضراء 🟢 (إبداع وابتكار)',
+                blue: 'القبعة الزرقاء 🔵 (قيادة وحوكمة)'
+            };
+
+            let decisionStatus = '';
+            let decisionRoleText = '';
+
+            if (globalScore100 >= 80) {
+                decisionStatus = 'توصية بـ (التثبيت الوظيفي - Confirmation)';
+                decisionRoleText = `تأهيل وتثبيت المرشح لشغل وظيفة (${vacancy}) لارتفاع الجدارات والتوافق الإداري[cite: 1].`;
+            } else if (globalScore100 >= 65) {
+                decisionStatus = 'توصية بـ (النقل والتدوير الوظيفي - Redeployment)';
+                decisionRoleText = `توصية بنقل الموظف لشاغر أكثر ملاءمة لنمطه السلوكي والقبعة السائدة[cite: 1].`;
+            } else {
+                decisionStatus = 'توصية بـ (التدريب والتمكين المكثف - Training)';
+                decisionRoleText = `إلحاق الموظف بمسار تدريبي مكثف لمدة 3 أشهر مع تحديد خطة تمكين فردية[cite: 1].`;
+            }
+
+            lastInterviewResult = {
+                candidateName: name,
+                vacancy: vacancy,
+                globalScore100: globalScore100,
+                dominantHat: hatNamesMap[dominantHatKey] || 'نمط متوازن',
+                decisionStatus: decisionStatus,
+                decisionRoleText: decisionRoleText
+            };
+
+            document.getElementById('resName').innerText = name;
+            document.getElementById('resJob').innerText = `شاغر: ${vacancy}`;
+            document.getElementById('resDominantHat').innerText = `${hatNamesMap[dominantHatKey] || 'نمط متوازن'} (درجة المقابلة الشاملة: ${globalScore100.toFixed(1)} / 100)`;
+            document.getElementById('resDate').innerText = new Date().toISOString().split('T')[0];
+
+            document.getElementById('resStrengths').innerHTML = `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">توافق عالي مع مهارات الشاغر المخصص (${vacancy})</span>`;
+            document.getElementById('resWeaknesses').innerHTML = `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">يحتاج تمكين في بعض جوانب التقييم الميداني</span>`;
+
+            document.getElementById('resDecisionStatus').innerText = decisionStatus;
+            document.getElementById('resRecommendedRole').innerText = decisionRoleText;
+
+            document.getElementById('reportSection').style.display = 'block';
+            renderRadarChart(hatAverages);
+            document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderRadarChart(averages) {
+            const ctx = document.getElementById('hatRadarChart').getContext('2d');
+            if (interviewRadarChart) interviewRadarChart.destroy();
+
+            interviewRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['بيضاء ⚪', 'حمراء 🔴', 'سوداء 🖤', 'صفراء 🟡', 'خضراء 🟢', 'زرقاء 🔵'],
+                    datasets: [{
+                        label: 'مستوى الأداء الفكري البُعدي (من 5)',
+                        data: [
+                            averages.white || 0,
+                            averages.red || 0,
+                            averages.black || 0,
+                            averages.yellow || 0,
+                            averages.green || 0,
+                            averages.blue || 0
+                        ],
+                        backgroundColor: 'rgba(184, 147, 85, 0.25)',
+                        borderColor: '#B89355',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2C4A34'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: { stepSize: 1, font: { family: 'Cairo' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { font: { family: 'Cairo', weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        function transferInterviewToEmployeeForm() {
+            if (!lastInterviewResult) return;
+
+            document.getElementById('form-emp-name').value = lastInterviewResult.candidateName;
+            document.getElementById('form-emp-job').value = lastInterviewResult.vacancy;
+
+            const score = Math.round(lastInterviewResult.globalScore100);
+            document.getElementById('form-score-1').value = score;
+            document.getElementById('form-score-2').value = score;
+            document.getElementById('form-score-3').value = score;
+            document.getElementById('form-score-4').value = score;
+
+            if (score >= 80) {
+                document.getElementById('form-decision-type').value = 'تثبيت';
+            } else if (score >= 65) {
+                document.getElementById('form-decision-type').value = 'نقل';
+            } else {
+                document.getElementById('form-decision-type').value = 'تدريب';
+            }
+
+            toggleOtherLocationInput();
+            recalcForm();
+            switchTab('form');
+            showPlatformAlert('تم نقل نتائج المقابلة والتوصية الإدارية بنجاح إلى استمارة الموظف الرسمية.');
+        }
+
+        function openAddQuestionModal() {
+            document.getElementById('editQuestionIndex').value = "-1";
+            document.getElementById('modalTitleText').innerHTML = '<i class="fa-solid fa-plus text-adminGold-600"></i> إضافة سؤال جديد لبنك الأسئلة';
+            document.getElementById('newQTrait').value = "";
+            document.getElementById('newQText').value = "";
+            document.getElementById('newQAnswer').value = "";
+            document.getElementById('addQuestionBox').classList.remove('hidden');
+        }
+
+        function closeAddQuestionModal() {
+            document.getElementById('addQuestionBox').classList.add('hidden');
+        }
+
+        function saveNewQuestion() {
+            const hat = document.getElementById('newQHat').value;
+            const vacancy = document.getElementById('newQVacancy').value;
+            const trait = document.getElementById('newQTrait').value.trim() || 'كفاءة تخصصية';
+            const text = document.getElementById('newQText').value.trim();
+            const answer = document.getElementById('newQAnswer').value.trim();
+            const editIdx = parseInt(document.getElementById('editQuestionIndex').value);
+
+            if (!text || !answer) {
+                showPlatformAlert('تنبيه: يرجى إدخال نص السؤال والإجابة النموذجية المرجوة.');
+                return;
+            }
+
+            const hatNamesMap = {
+                white: 'القبعة البيضاء ⚪',
+                red: 'القبعة الحمراء 🔴',
+                black: 'القبعة السوداء 🖤',
+                yellow: 'القبعة الصفراء 🟡',
+                green: 'القبعة الخضراء 🟢',
+                blue: 'القبعة الزرقاء 🔵',
+                admin: 'سؤال إداري وتنظيمي 🏢'
+            };
+
+            if (editIdx >= 0) {
+                // تعديل سؤال موجود بالبنك
+                fullQuestionBank[editIdx].hat = hat;
+                fullQuestionBank[editIdx].hatName = hatNamesMap[hat];
+                fullQuestionBank[editIdx].vacancy = vacancy;
+                fullQuestionBank[editIdx].trait = trait;
+                fullQuestionBank[editIdx].text = text;
+                fullQuestionBank[editIdx].answer = answer;
+                showPlatformAlert('تم تحديث السؤال في بنك الأسئلة بنجاح.');
+            } else {
+                // إضافة سؤال جديد
+                const newId = fullQuestionBank.length > 0 ? Math.max(...fullQuestionBank.map(i => i.id)) + 1 : 1;
+                fullQuestionBank.push({
+                    id: newId,
+                    hat: hat,
+                    hatName: hatNamesMap[hat],
+                    vacancy: vacancy,
+                    text: text,
+                    answer: answer,
+                    trait: trait
+                });
+                showPlatformAlert('تم حفظ السؤال الجديد بنجاح في بنك الأسئلة الشامل.');
+            }
+
+            closeAddQuestionModal();
+            renderFullBank();
+        }
+
+        // تعديل سؤال من بنك الأسئلة الشامل
+        function editBankQuestion(index) {
+            const q = fullQuestionBank[index];
+            if (!q) return;
+            document.getElementById('editQuestionIndex').value = index;
+            document.getElementById('modalTitleText').innerHTML = '<i class="fa-solid fa-pen-to-square text-adminGold-600"></i> تعديل سؤال في بنك الأسئلة';
+            document.getElementById('newQHat').value = q.hat;
+            document.getElementById('newQVacancy').value = q.vacancy;
+            document.getElementById('newQTrait').value = q.trait;
+            document.getElementById('newQText').value = q.text;
+            document.getElementById('newQAnswer').value = q.answer;
+            document.getElementById('addQuestionBox').classList.remove('hidden');
+            document.getElementById('addQuestionBox').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // حذف سؤال من بنك الأسئلة الشامل
+        function deleteBankQuestion(index) {
+            if (confirm("هل أنت متأكد من حذف هذا السؤال من بنك الأسئلة الشامل؟")) {
+                fullQuestionBank.splice(index, 1);
+                renderFullBank();
+                showPlatformAlert('تم حذف السؤال من بنك الأسئلة بنجاح.');
+            }
+        }
+
+        function renderFullBank() {
+            const container = document.getElementById('fullBankContainer');
+            container.innerHTML = '';
+
+            fullQuestionBank.forEach((q, idx) => {
+                const item = document.createElement('div');
+                item.className = 'bg-royalBeige-50 p-4 rounded-lg border border-royalBeige-300 text-xs space-y-2';
+                item.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-royalBeige-200 pb-2 flex-wrap gap-2">
+                        <span class="font-bold text-deepGreen-900">سؤال رقم (${idx + 1}) - <span class="text-adminGold-600">${q.hatName}</span></span>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-adminGold-500 text-white px-2.5 py-0.5 rounded font-bold">شاغر: ${q.vacancy}</span>
+                            <button onclick="editBankQuestion(${idx})" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[11px]"><i class="fa-solid fa-pen"></i> تعديل</button>
+                            <button onclick="deleteBankQuestion(${idx})" class="bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[11px]"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                    <p class="font-bold text-gray-800 text-sm leading-relaxed">${q.text}</p>
+                    <div class="bg-white p-2.5 rounded border border-royalBeige-200 text-gray-600">
+                        <strong class="text-deepGreen-800 block mb-1">مؤشر الإجابة النموذجية:</strong>
+                        ${q.answer}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateAppraisal();
+            recalcForm();
+            renderFullBank();
+            toggleBaselineState();
+        });
+    </script>
+</body>
+</html>
